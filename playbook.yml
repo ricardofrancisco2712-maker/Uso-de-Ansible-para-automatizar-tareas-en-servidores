@@ -1,0 +1,39 @@
+---
+- name: Configurar los servidores Ubuntu del laboratorio
+  hosts: servidores
+  become: true
+
+  tasks:
+    - name: Actualizar la caché de APT
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Crear el usuario itla
+      ansible.builtin.user:
+        name: itla
+        state: present
+        create_home: true
+
+    - name: Crear la carpeta app
+      ansible.builtin.file:
+        path: /home/itla/app
+        state: directory
+        owner: itla
+        group: itla
+        mode: "0755"
+
+    - name: Crear hola.txt
+      ansible.builtin.copy:
+        dest: /home/itla/app/hola.txt
+        content: "Hola desde Ansible\n"
+        owner: itla
+        group: itla
+        mode: "0644"
+
+    - name: Instalar cowsay y htop
+      ansible.builtin.apt:
+        name:
+          - cowsay
+          - htop
+        state: present
